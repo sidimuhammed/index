@@ -1,0 +1,217 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sidi's Typing Club - Exercise</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            text-align: center;
+            font-size: 16px; /* Default font size for smaller screens */
+        }
+
+        header {
+            background-color: #333;
+            color: #fff;
+            padding: 1em;
+        }
+
+        section {
+            max-width: 100%; /* Full width for smaller screens */
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center; /* Center align text */
+        }
+
+        #typing-container {
+            margin-top: 20px;
+        }
+
+        #word-list {
+            font-size: 24px; /* Larger font size for the word */
+            margin-bottom: 20px;
+        }
+
+        #typing-input {
+            padding: 10px;
+            font-size: 16px;
+            width: 100%; /* Full width for smaller screens */
+            margin-bottom: 10px; /* Add some space below the input */
+        }
+
+        /* Style for navigation buttons */
+        .navigation-button {
+            padding: 12px 20px;
+            font-size: 16px;
+            background-color: #4CAF50;
+            color: white;
+            cursor: pointer;
+            border: none;
+            margin: 5px;
+        }
+
+        #restart-exercise-button {
+            display: inline-block; /* Set the display property to inline-block */
+            background-color: #333;
+        }
+
+        /* Add styling for the feedback text */
+        #typing-feedback {
+            color: black;
+            font-weight: bold;
+        }
+
+        #typing-feedback.correct {
+            color: green;
+        }
+
+        #typing-feedback.incorrect {
+            color: red;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>Sidi's Typing Club</h1>
+    </header>
+    <section>
+        <h2>Interactive Typing Exercise</h2>
+        <p>Type the following words:</p>
+        <ul id="word-list">
+            <!-- Words will be dynamically added here -->
+        </ul>
+        <div id="typing-container">
+            <input type="text" id="typing-input" oninput="checkTyping()">
+            <p id="typing-feedback"></p>
+            <button class="navigation-button" id="previous-button" onclick="previousWord()">Previous</button>
+            <button class="navigation-button" id="next-button" onclick="nextWord()">Next</button>
+            <button class="navigation-button" id="restart-button" onclick="restartTyping()">Restart Typing</button>
+            <button class="navigation-button" id="restart-exercise-button" onclick="restartExercise()">Restart Exercise</button>
+        </div>
+    </section>
+    <footer>
+        <p>&copy; 2023 Sidi's Typing Club</p>
+    </footer>
+
+    <script>
+        const wordList = [
+            'apple', 'banana', 'chocolate', 'developer', 'elephant', 'sword', 'islam', 'laptop',
+            'puzzle', 'parliament', 'exquisite', 'ubiquitous', 'onomatopoeia', 'rhythm', 'entrepreneur', 'accommodate',
+            'pharaoh', 'xylophone', 'czar', 'mnemonic', 'haphazard', 'serendipity', 'bourgeois', 'perpendicular',
+            'benevolent', 'facetious', 'mnemonic', 'gargantuan', 'happy', 'flower', 'table', 'ocean', 'mountain',
+            'keyboard', 'umbrella', 'breeze', 'diamond', 'zebra', 'robot', 'jazz', 'quasar', 'jumble', 'kangaroo',
+            'whistle', 'zigzag', 'vortex', 'synergy'
+        ];
+
+        const difficultyMap = {
+            'easy': ['happy', 'flower', 'table', 'ocean', 'mountain'],
+            'normal': ['developer', 'elephant', 'sword', 'islam', 'laptop', 'keyboard', 'umbrella', 'breeze', 'diamond'],
+            'hard': ['puzzle', 'parliament', 'exquisite', 'ubiquitous', 'onomatopoeia', 'rhythm', 'entrepreneur', 'accommodate', 'pharaoh', 'xylophone']
+        };
+
+        let currentWordIndex = 0;
+
+        function classifyDifficulty(word) {
+            if (difficultyMap['easy'].includes(word)) {
+                return 'easy';
+            } else if (difficultyMap['normal'].includes(word)) {
+                return 'normal';
+            } else {
+                return 'hard';
+            }
+        }
+
+        function updateWord() {
+            const currentWord = wordList[currentWordIndex];
+            const difficulty = classifyDifficulty(currentWord);
+            document.getElementById('word-list').innerHTML = `<li class="${difficulty}">${currentWord}</li>`;
+        }
+
+        function checkTyping() {
+            const typedText = document.getElementById('typing-input').value;
+            const originalWord = wordList[currentWordIndex];
+            const feedbackElement = document.getElementById('typing-feedback');
+
+            if (typedText === originalWord) {
+                feedbackElement.innerText = 'Correct! Well done.';
+                feedbackElement.classList.remove('incorrect');
+                feedbackElement.classList.add('correct');
+                currentWordIndex++;
+
+                if (currentWordIndex < wordList.length) {
+                    setTimeout(() => {
+                        updateWord();
+                        feedbackElement.innerText = '';
+                        document.getElementById('typing-input').value = '';
+                        feedbackElement.classList.remove('correct');
+                    }, 1000);
+                } else {
+                    document.getElementById('word-list').innerHTML = '<li>Well done! You completed the exercise.</li>';
+                    document.getElementById('typing-container').style.display = 'none';
+                    document.getElementById('restart-exercise-button').style.display = 'inline-block';
+                }
+            } else {
+                feedbackElement.innerText = 'Keep trying...';
+                feedbackElement.classList.remove('correct');
+                feedbackElement.classList.add('incorrect');
+            }
+        }
+
+        function restartTyping() {
+            currentWordIndex = 0;
+            document.getElementById('typing-container').style.display = 'block';
+            updateWord();
+            document.getElementById('typing-feedback').innerText = '';
+            document.getElementById('typing-input').value = '';
+            document.getElementById('typing-feedback').classList.remove('correct', 'incorrect');
+            document.getElementById('restart-exercise-button').style.display = 'none';
+        }
+
+        function restartExercise() {
+            currentWordIndex = 0;
+            document.getElementById('word-list').innerHTML = '';
+            document.getElementById('typing-container').style.display = 'block';
+            updateWord();
+            document.getElementById('typing-feedback').innerText = '';
+            document.getElementById('typing-input').value = '';
+            document.getElementById('typing-feedback').classList.remove('correct', 'incorrect');
+            document.getElementById('restart-exercise-button').style.display = 'none';
+        }
+
+        function nextWord() {
+            currentWordIndex++;
+            if (currentWordIndex >= wordList.length) {
+                currentWordIndex = wordList.length - 1;
+            }
+            updateWord();
+            document.getElementById('typing-feedback').innerText = '';
+            document.getElementById('typing-input').value = '';
+            document.getElementById('typing-feedback').classList.remove('correct', 'incorrect');
+        }
+
+        function previousWord() {
+            currentWordIndex--;
+            if (currentWordIndex < 0) {
+                currentWordIndex = 0;
+            }
+            updateWord();
+            document.getElementById('typing-feedback').innerText = '';
+            document.getElementById('typing-input').value = '';
+            document.getElementById('typing-feedback').classList.remove('correct', 'incorrect');
+        }
+
+        // Initialize the first word
+        updateWord();
+    </script>
+</body>
+
+</html>
